@@ -1,0 +1,31 @@
+{% if dokuwiki_container_labels_traefik_enabled %}
+traefik.enable=true
+
+{% if dokuwiki_container_labels_traefik_docker_network %}
+traefik.docker.network={{ dokuwiki_container_labels_traefik_docker_network }}
+{% endif %}
+
+traefik.http.routers.{{ dokuwiki_identifier }}.rule={{ dokuwiki_container_labels_traefik_rule }}
+{% if dokuwiki_container_labels_traefik_priority | int > 0 %}
+traefik.http.routers.{{ dokuwiki_identifier }}.priority={{ dokuwiki_container_labels_traefik_priority }}
+{% endif %}
+traefik.http.routers.{{ dokuwiki_identifier }}.service={{ dokuwiki_identifier }}
+traefik.http.routers.{{ dokuwiki_identifier }}.entrypoints={{ dokuwiki_container_labels_traefik_entrypoints }}
+traefik.http.routers.{{ dokuwiki_identifier }}.tls={{ dokuwiki_container_labels_traefik_tls | to_json }}
+{% if dokuwiki_container_labels_traefik_tls %}
+traefik.http.routers.{{ dokuwiki_identifier }}.tls.certResolver={{ dokuwiki_container_labels_traefik_tls_certResolver }}
+{% endif %}
+
+traefik.http.services.{{ dokuwiki_identifier }}.loadbalancer.server.port=8080
+{% endif %}
+
+{% set middlewares = [] %}
+
+{% if dokuwiki_container_labels_traefik_additional_response_headers.keys() | length > 0 %}
+{% for name, value in dokuwiki_container_labels_traefik_additional_response_headers.items() %}
+traefik.http.middlewares.{{ dokuwiki_identifier }}-add-headers.headers.customresponseheaders.{{ name }}={{ value }}
+{% endfor %}
+{% set middlewares = middlewares + [dokuwiki_identifier + '-add-headers'] %}
+{% endif %}
+
+{{ dokuwiki_container_labels_additional_labels }}

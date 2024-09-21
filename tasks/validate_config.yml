@@ -1,0 +1,21 @@
+---
+
+- name: Fail if required dokuwiki settings not defined
+  ansible.builtin.fail:
+    msg: >-
+      You need to define a required configuration setting (`{{ item }}`) for using this role.
+  when: "vars[item] == ''"
+  with_items:
+    - dokuwiki_hostname
+    - dokuwiki_uid
+    - dokuwiki_gid
+
+- when: dokuwiki_container_labels_traefik_enabled | bool
+  block:
+    - name: Fail if required dokuwiki Traefik settings not defined
+      ansible.builtin.fail:
+        msg: >-
+          You need to define a required configuration setting (`{{ item }}`).
+      when: "vars[item] == ''"
+      with_items:
+        - dokuwiki_container_labels_traefik_hostname

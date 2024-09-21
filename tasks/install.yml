@@ -1,0 +1,42 @@
+---
+
+- name: Ensure Dokuwiki paths exists
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: "{{ item.state }}"
+    mode: 0700
+    owner: "{{ dokuwiki_uid }}"
+    group: "{{ dokuwiki_gid }}"
+  with_items:
+    - { path: "{{ dokuwiki_base_path }}", when: true }
+    - { path: "{{ dokuwiki_storage_path }}", when: true }
+
+- name: Ensure Dokuwiki container network is created
+  community.general.docker_network:
+    name: "{{ dokuwiki_container_network }}"
+    driver: bridge
+
+- name: Ensure Dokuwiki container image is pulled
+  community.docker.docker_image:
+    name: "{{ item.image }}"
+    source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
+  with_items:
+    - {image: "{{ dokuwiki_container_image }}"}
+
+- name: Ensure Dokuwiki env and labels are deployed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "{{ dokuwiki_config_path }}/{{ item }}"
+    mode: 0640
+  with_items:
+    - env
+    - labels
+
+- name: Ensure Dokuwiki systemd service installed
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/systemd/{{ item }}.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ dokuwiki_identifier }}-{{ item }}"
+    mode: 0640
+  with_items:
+    - dokuwiki.service
+
