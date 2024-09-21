@@ -22,9 +22,7 @@ ExecStartPre={{ devture_systemd_docker_base_host_command_docker }} create \
 			--network={{ dokuwiki_container_network }} \
 			--env-file={{ dokuwiki_base_path }}/env \
 			--label-file={{ dokuwiki_base_path }}/labels \
-			{% for arg in dokuwiki_container_extra_arguments %}
-			{{ arg }} \
-			{% endfor %}
+			--mount type=bind,src={{ dokuwiki_storage_path }},dst=/storage \
 			{{ dokuwiki_container_image }}
 
 {% for network in dokuwiki_container_additional_networks %}

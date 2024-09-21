@@ -7,8 +7,6 @@
   when: "vars[item] == ''"
   with_items:
     - dokuwiki_hostname
-    - dokuwiki_uid
-    - dokuwiki_gid
 
 - when: dokuwiki_container_labels_traefik_enabled | bool
   block:
