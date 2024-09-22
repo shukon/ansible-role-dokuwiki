@@ -8,6 +8,8 @@ dokuwiki_identifier: dokuwiki
 dokuwiki_version: 2023-04-04b
 
 dokuwiki_hostname: ''
+dokuwiki_path_prefix: /
+
 
 dokuwiki_uid: ''
 dokuwiki_gid: ''
@@ -42,7 +44,9 @@ dokuwiki_container_labels_traefik_enabled: true
 dokuwiki_container_labels_traefik_docker_network: ''
 dokuwiki_container_labels_traefik_hostname: "{{ dokuwiki_hostname }}"
 
-dokuwiki_container_labels_traefik_rule: "Host(`{{ dokuwiki_container_labels_traefik_hostname }}`)"
+# The path prefix must either be `/` or not end with a slash (e.g. `/ip`).
+dokuwiki_container_labels_traefik_path_prefix: "{{ dokuwiki_path_prefix }}"
+dokuwiki_container_labels_traefik_rule: "Host(`{{ dokuwiki_container_labels_traefik_hostname }}`){% if dokuwiki_container_labels_traefik_path_prefix != '/' %} && PathPrefix(`{{ dokuwiki_container_labels_traefik_path_prefix }}`){% endif %}"  # noqa yaml[line-length]
 dokuwiki_container_labels_traefik_priority: 0
 dokuwiki_container_labels_traefik_entrypoints: web-secure
 dokuwiki_container_labels_traefik_tls: "{{ dokuwiki_container_labels_traefik_entrypoints != 'web' }}"

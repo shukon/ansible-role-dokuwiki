@@ -8,6 +8,12 @@
   with_items:
     - dokuwiki_hostname
 
+- name: Fail if dokuwiki hosted at a subpath
+  ansible.builtin.fail:
+    msg: >
+      Dokuwiki can currently only be hosted at the base path (`/`), not at a subpath like `{{ dokuwiki_path_prefix }}`).
+  when: "dokuwiki_path_prefix != '/'"
+
 - when: dokuwiki_container_labels_traefik_enabled | bool
   block:
     - name: Fail if required dokuwiki Traefik settings not defined
