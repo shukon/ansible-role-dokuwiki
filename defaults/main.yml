@@ -5,7 +5,7 @@
 dokuwiki_enabled: true
 dokuwiki_identifier: dokuwiki
 
-dokuwiki_version: 2023-04-04b
+dokuwiki_version: 2024-02-06b
 
 dokuwiki_hostname: ''
 dokuwiki_path_prefix: /
